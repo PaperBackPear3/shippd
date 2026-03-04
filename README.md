@@ -41,17 +41,17 @@ pnpm build
 
 All site configuration is in `src/config/site.ts`. This is the only file you need to edit to personalize the theme.
 
-| Section | Description |
-|---------|-------------|
-| `meta` | Site title, description, author, logo, language |
-| `navigation` | Navigation menu items with subtitle labels |
-| `social` | Social links (GitHub, Email, etc.) |
-| `hero` | Homepage greeting, description, info cards |
-| `footer` | Copyright and credit text |
-| `comments` | Artalk comments configuration |
-| `features` | Toggle search, RSS |
-| `tools` | Tools/Stack page data |
-| `labels` | All UI text labels (for i18n) |
+| Section      | Description                                     |
+| ------------ | ----------------------------------------------- |
+| `meta`       | Site title, description, author, logo, language |
+| `navigation` | Navigation menu items with subtitle labels      |
+| `social`     | Social links (GitHub, Email, etc.)              |
+| `hero`       | Homepage greeting, description, info cards      |
+| `footer`     | Copyright and credit text                       |
+| `comments`   | Artalk comments configuration                   |
+| `features`   | Toggle search, RSS                              |
+| `tools`      | Tools/Stack page data                           |
+| `labels`     | All UI text labels (for i18n)                   |
 
 Also update `astro.config.mjs` to set your `site` URL.
 
@@ -89,11 +89,11 @@ Edit `src/content/miscs/friends.json` with `name`, `description`, `link`, `avata
 
 ## Theme Colors
 
-Edit `src/styles/theme.css`. All colors use OKLch with a consistent hue value (default: 165).
+Edit `src/styles/theme.css`. All colors use OKLch with a consistent hue value (default: 280).
 
 To change the color palette, find-and-replace the hue number:
 
-- `165` = Sage Green (default)
+- `280` = Sage Green (default)
 - `250` = Ocean Blue
 - `280` = Lavender Purple
 - `330` = Rose Pink
@@ -119,6 +119,22 @@ pnpm build
 ```
 
 The output is in `dist/`.
+
+### GitHub Pages
+
+This repo includes `.github/workflows/deploy.yml` to deploy automatically.
+
+1. Push your project to GitHub.
+2. In GitHub, open `Settings -> Pages`.
+3. Set `Source` to `GitHub Actions`.
+4. Push to `main` (or run the workflow manually from the `Actions` tab).
+
+The workflow computes `SITE_URL` and `BASE_PATH` automatically:
+
+- User/organization pages (`<user>.github.io`) use `/`.
+- Project pages use `/<repo-name>`.
+
+If you use a custom domain, set `SITE_URL` and `BASE_PATH` as environment variables in your deploy environment.
 
 ## License
 
