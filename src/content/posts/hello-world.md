@@ -1,7 +1,7 @@
 ---
 title: Hello World - Welcome to Breeze
 createdAt: 2026-01-01
-category: technology
+category: drafts
 tags: [astro, tailwindcss]
 summary: Welcome to Breeze, a minimal Astro theme for personal websites.
 draft: true

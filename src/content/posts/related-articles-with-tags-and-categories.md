@@ -1,11 +1,11 @@
 ---
 title: Related Articles with Tags and Categories
 createdAt: 2026-03-04
-category: technology
+category: vibe-coding
 tags: [astro, tutorial]
 linksTo: [markdown-guide]
 summary: How related posts now work in this blog, and what GitHub Copilot changed to enable it.
-draft: true
+draft: false
 ---
 
 I wanted articles in this blog to be connected to each other, so this update adds an automatic **Related articles** section to every post.

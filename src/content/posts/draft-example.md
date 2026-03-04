@@ -1,7 +1,7 @@
 ---
 title: Draft Post Example
 createdAt: 2026-03-03
-category: technology
+category: drafts
 tags: [astro]
 summary: This is a draft post that won't appear in production builds.
 draft: true

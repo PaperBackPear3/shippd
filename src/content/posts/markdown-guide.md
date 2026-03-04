@@ -1,7 +1,7 @@
 ---
 title: Markdown Guide
 createdAt: 2026-01-02
-category: technology
+category: drafts
 tags: [markdown, tutorial]
 linksTo: [hello-world, related-articles-with-tags-and-categories]
 summary: A guide to all supported Markdown features in Breeze theme.
