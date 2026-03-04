@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import { getPosts } from "@/utils/post";
 import { Icon } from "astro-icon/components";
 import { getCollection } from "astro:content";
+import { withBasePath } from "@/utils/url";
 
 const allCategories = await getCollection("categories");
 const allPosts = await getPosts();
@@ -27,7 +28,7 @@ const categoryCounts = allPosts.reduce((acc: Record<string, number>, post) => {
       {
         allCategories.map((cat) => (
           <a
-            href={`/categories/${cat.data.slug}`}
+            href={withBasePath(`/categories/${cat.data.slug}`)}
             class="group flex items-center gap-4 rounded-2xl border border-border/50 bg-muted/20 p-5 hover:border-primary/30 hover:bg-card"
           >
             <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">

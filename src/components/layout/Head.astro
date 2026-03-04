@@ -1,6 +1,7 @@
 ---
 import site from "@/config/site";
 import type { HeadProps } from "@/types";
+import { withBasePath } from "@/utils/url";
 import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
 
@@ -8,6 +9,7 @@ type Props = HeadProps;
 
 const { title, description, image = site.ogImage } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImagePath = image.startsWith("/") ? withBasePath(image) : image;
 ---
 
 <!-- Global Metadata -->
@@ -16,19 +18,43 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+  <link rel="icon" type="image/svg+xml" href={withBasePath("/favicon.svg")} />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="16x16"
+    href={withBasePath("/favicon-16.png")}
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="32x32"
+    href={withBasePath("/favicon-32.png")}
+  />
 
   <!-- Apple Touch Icon -->
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href={withBasePath("/apple-touch-icon.png")}
+  />
 
   <!-- PWA Icons -->
-  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
-  <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="192x192"
+    href={withBasePath("/icon-192.png")}
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="512x512"
+    href={withBasePath("/icon-512.png")}
+  />
 
   <!-- PWA Manifest -->
-  <link rel="manifest" href="/manifest.json" />
+  <link rel="manifest" href={withBasePath("/manifest.json")} />
 
   <!-- Theme Color -->
   <meta name="theme-color" content="#3F9C87" />
@@ -46,7 +72,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   <meta property="og:url" content={Astro.url} />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
-  <meta property="og:image" content={new URL(image, Astro.url)} />
+  <meta property="og:image" content={new URL(ogImagePath, Astro.url)} />
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
@@ -54,7 +80,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   <meta property="twitter:title" content={title} />
   <meta property="twitter:description" content={description} />
   <meta name="twitter:creator" content={`@${site.meta.author}`} />
-  <meta name="twitter:image" content={new URL(image, Astro.url)} />
+  <meta name="twitter:image" content={new URL(ogImagePath, Astro.url)} />
 
   <!-- RSS Link -->
   <link
@@ -68,11 +94,11 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   <link rel="canonical" href={canonicalURL} />
 
   <!-- Sitemap -->
-  <link rel="sitemap" href="/sitemap-index.xml" />
+  <link rel="sitemap" href={withBasePath("/sitemap-index.xml")} />
 
   <!-- pagefind -->
-  <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
-  <script src="/pagefind/pagefind-ui.js" is:inline></script>
+  <link href={withBasePath("/pagefind/pagefind-ui.css")} rel="stylesheet" />
+  <script src={withBasePath("/pagefind/pagefind-ui.js")} is:inline></script>
 
   <!-- font  -->
   <Font cssVariable="--font-display" preload />

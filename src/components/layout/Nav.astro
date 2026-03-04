@@ -1,8 +1,10 @@
 ---
 import site from "@/config/site";
 import { Icon } from "astro-icon/components";
+import { stripBasePath, withBasePath } from "@/utils/url";
 
 const currentPath = Astro.url.pathname;
+const normalizedPath = stripBasePath(currentPath);
 ---
 
 <nav
@@ -11,11 +13,11 @@ const currentPath = Astro.url.pathname;
   {
     site.navigation.map((item) => {
       const isActive =
-        currentPath === item.href ||
-        (item.href !== "/" && currentPath.startsWith(item.href));
+        normalizedPath === item.href ||
+        (item.href !== "/" && normalizedPath.startsWith(item.href));
       return (
         <a
-          href={item.href}
+          href={withBasePath(item.href)}
           class:list={[
             "group flex min-w-24 items-center justify-center rounded-2xl border border-transparent px-4 py-3 transition-all md:min-w-0 md:justify-between md:py-4",
             isActive

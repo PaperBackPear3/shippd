@@ -2,6 +2,7 @@
 import { getPosts } from "@/utils/post";
 import Layout from "../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
+import { withBasePath } from "@/utils/url";
 
 const allTags = await getCollection("tags");
 const allPosts = await getPosts();
@@ -28,7 +29,7 @@ const tagCounts = allPosts.reduce((acc: Record<string, number>, post) => {
       {
         allTags.map((tag) => (
           <a
-            href={`/tags/${tag.data.slug}`}
+            href={withBasePath(`/tags/${tag.data.slug}`)}
             class="group flex flex-col gap-2 rounded-2xl border border-border/50 bg-muted/30 px-4 py-3 hover:border-primary/40 hover:bg-card"
           >
             <div class="flex items-center gap-2">
