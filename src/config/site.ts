@@ -46,7 +46,7 @@ const site = {
     greeting: "👋 Hello, I'm Fabio <PaperBackPear>",
     // Supports HTML. Use <span class="font-medium text-foreground underline decoration-primary/30"> to highlight keywords
     description:
-      "I love coding and everything sourrounding computers. here you will read about real world scenarious i found myself into, the problems I faced and solutions I found",
+      "I love coding and everything sourrounding computers. here you will read about real world production scenarios i found myself in, the problems I faced and solutions I found",
     cards: [
       {
         icon: "mdi:explore",
