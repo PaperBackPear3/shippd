@@ -21,5 +21,11 @@
     "name": "Uncategorized",
     "slug": "uncategorized",
     "icon": "mdi:folder"
+  },
+  {
+    "name": "Vibecoded",
+    "slug": "vibe-coding",
+    "description": "updates made almost all with AI",
+    "icon": "mdi:ai"
   }
 ]
