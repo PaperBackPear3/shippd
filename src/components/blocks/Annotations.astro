@@ -147,6 +147,31 @@ const { articleTitle } = Astro.props;
     return text;
   };
 
+  const nodeToElement = (node: Node | null) => {
+    if (!node) return null;
+    return node.nodeType === Node.ELEMENT_NODE
+      ? (node as Element)
+      : node.parentElement;
+  };
+
+  const getSelectionRange = () => {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+      return null;
+    }
+    return selection.getRangeAt(0);
+  };
+
+  const isSelectionInsideRoot = (range: Range) => {
+    if (!root) return false;
+
+    const start = nodeToElement(range.startContainer);
+    const end = nodeToElement(range.endContainer);
+
+    if (!start || !end) return false;
+    return root.contains(start) && root.contains(end);
+  };
+
   const hideMenu = () => {
     if (!menu) return;
     menu.classList.add("hidden", "pointer-events-none", "opacity-0");
@@ -188,41 +213,37 @@ const { articleTitle } = Astro.props;
       (item) => item.text === text && item.articlePath === articlePath,
     );
 
-    if (duplicate) {
-      toast("This snippet is already saved for this article.", "info");
-      window.getSelection()?.removeAllRanges();
-      hideMenu();
-      return;
+    if (root && menu) {
+      const updateSelectionMenu = () => {
+        const text = getSelectedText();
+        const range = getSelectionRange();
+
+        if (!text || !range || !isSelectionInsideRoot(range)) {
+          hideMenu();
+          return;
+        }
+
+        const rect = range.getBoundingClientRect();
+        const x = rect.left + rect.width / 2 - 88;
+        const y = rect.top - 52;
+        showMenu(x, y);
+      };
+
+      // Delay selection reads so browsers can finish updating selection state.
+      const scheduleUpdate = () => {
+        window.setTimeout(updateSelectionMenu, 0);
+      };
+
+      document.addEventListener("pointerup", scheduleUpdate);
+      document.addEventListener("keyup", scheduleUpdate);
+      document.addEventListener("selectionchange", () => {
+        if (!getSelectedText()) {
+          hideMenu();
+        }
+      });
+
+      document.addEventListener("scroll", hideMenu, true);
     }
-
-    const entry: Annotation = {
-      id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-      text,
-      note,
-      articleTitle,
-      articlePath,
-      articleUrl: window.location.href,
-      createdAt: new Date().toISOString(),
-    };
-
-    annotations.unshift(entry);
-    writeAnnotations(annotations);
-    renderAnnotations();
-
-    window.getSelection()?.removeAllRanges();
-    hideMenu();
-    toast("Annotation saved.", "success");
-  };
-
-  const removeAnnotation = (id: string) => {
-    const annotations = readAnnotations().filter((item) => item.id !== id);
-    writeAnnotations(annotations);
-    renderAnnotations();
-  };
-
-  const clearAnnotations = () => {
-    const approved = window.confirm("Clear all saved annotations?");
-    if (!approved) return;
 
     writeAnnotations([]);
     renderAnnotations();
