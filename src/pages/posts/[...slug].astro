@@ -12,6 +12,7 @@ import Toast from "@/components/blocks/Toast.astro";
 import Comments from "@/components/blocks/Comments.astro";
 import TableOfContents from "@/components/blocks/TableOfContents.astro";
 import Annotations from "@/components/blocks/Annotations.astro";
+import PostPreview from "@/components/blocks/PostPreview.astro";
 import site from "@/config/site";
 import { withBasePath } from "@/utils/url";
 
@@ -27,6 +28,45 @@ const { post } = Astro.props;
 const { Content, headings } = await render(post);
 const category = await getEntry(post.data.category);
 const tags = (await getEntries(post.data.tags)).filter((value) => value);
+const allPosts = await getCollection("posts", ({ data }) => {
+  return import.meta.env.PROD ? data.draft !== true : true;
+});
+
+const currentTagIds = new Set(
+  post.data.tags.map((tag) => `${tag.collection}:${tag.id}`),
+);
+
+const relatedPosts = allPosts
+  .filter((candidate) => candidate.id !== post.id)
+  .map((candidate) => {
+    const candidateTagIds = candidate.data.tags.map(
+      (tag) => `${tag.collection}:${tag.id}`,
+    );
+    const sharedTagCount = candidateTagIds.filter((tagId) =>
+      currentTagIds.has(tagId),
+    ).length;
+    const sameCategory =
+      candidate.data.category.collection === post.data.category.collection &&
+      candidate.data.category.id === post.data.category.id;
+
+    return {
+      candidate,
+      score: sharedTagCount * 10 + (sameCategory ? 3 : 0),
+    };
+  })
+  .filter(({ score }) => score > 0)
+  .sort((a, b) => {
+    if (b.score !== a.score) {
+      return b.score - a.score;
+    }
+
+    return (
+      new Date(b.candidate.data.createdAt).getTime() -
+      new Date(a.candidate.data.createdAt).getTime()
+    );
+  })
+  .slice(0, 3)
+  .map(({ candidate }) => candidate);
 ---
 
 <Layout title={post.data.title} description={post.data.summary}>
@@ -138,6 +178,21 @@ const tags = (await getEntries(post.data.tags)).filter((value) => value);
         ))
       }
     </div>
+
+    {
+      relatedPosts.length > 0 && (
+        <section class="mt-14 border-t border-border/40 pt-10">
+          <h2 class="mb-6 text-lg font-semibold tracking-tight text-foreground">
+            Related articles
+          </h2>
+          <div class="space-y-1">
+            {relatedPosts.map((relatedPost) => (
+              <PostPreview post={relatedPost} />
+            ))}
+          </div>
+        </section>
+      )
+    }
   </article>
 
   <footer class="mt-16 space-y-12 px-8 md:px-16">
