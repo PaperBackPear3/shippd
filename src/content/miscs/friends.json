@@ -3,6 +3,7 @@
     "id": "breeze",
     "name": "Breeze Theme",
     "description": "A minimal Astro theme",
-    "link": "https://github.com/linftyz/astro-theme-breeze"
+    "link": "https://github.com/linftyz/astro-theme-breeze",
+    "avatar": "https://astro.build/_image?href=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F248279539%3Fv%3D4&w=300&h=300&f=webp&dpl=69a80cf8b8563d00089685ab"
   }
 ]
