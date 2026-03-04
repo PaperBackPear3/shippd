@@ -32,10 +32,11 @@ const allPosts = await getCollection("posts", ({ data }) => {
   return import.meta.env.PROD ? data.draft !== true : true;
 });
 const linkedPosts = (await getEntries(post.data.linksTo)).filter(
-  (value) => value,
+  (value) => value && value.data.draft !== true,
 );
 const backlinks = allPosts
   .filter((candidate) => candidate.id !== post.id)
+  .filter((candidate) => candidate.data.draft !== true)
   .filter((candidate) =>
     candidate.data.linksTo.some(
       (linkRef) =>
