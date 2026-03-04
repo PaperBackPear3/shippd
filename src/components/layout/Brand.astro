@@ -1,6 +1,11 @@
 ---
 import site from "@/config/site";
 import { Image } from "astro:assets";
+import { withBasePath } from "@/utils/url";
+
+const logoSrc = site.meta.logo.startsWith("/")
+  ? withBasePath(site.meta.logo)
+  : site.meta.logo;
 ---
 
 <div
@@ -11,7 +16,7 @@ import { Image } from "astro:assets";
   >
     <Image
       loading={"eager"}
-      src={site.meta.logo}
+      src={logoSrc}
       alt={"Site logo"}
       width={50}
       height={50}
@@ -24,9 +29,7 @@ import { Image } from "astro:assets";
     >
       {site.meta.title}
     </h1>
-    <p
-      class="mt-2 hidden text-xs text-muted-foreground/70 md:block"
-    >
+    <p class="mt-2 hidden text-xs text-muted-foreground/70 md:block">
       {site.meta.description}
     </p>
   </div>

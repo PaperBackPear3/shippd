@@ -3,8 +3,12 @@ import Layout from "@/layouts/Layout.astro";
 import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
 import site from "@/config/site";
+import { withBasePath } from "@/utils/url";
 
 const friends = await getCollection("friends");
+
+const getAvatarSrc = (avatar: string) =>
+  avatar.startsWith("/") ? withBasePath(avatar) : avatar;
 ---
 
 <Layout
@@ -27,7 +31,7 @@ const friends = await getCollection("friends");
               class="group flex items-center gap-5 rounded-2xl border border-border/40 p-4 hover:bg-muted/30"
             >
               <Image
-                src={friend.data.avatar}
+                src={getAvatarSrc(friend.data.avatar)}
                 width={48}
                 height={48}
                 alt={friend.data.name}
