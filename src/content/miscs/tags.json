@@ -1,9 +1,18 @@
 [
-  { "name": "Astro", "slug": "astro" },
-  { "name": "Tailwind CSS", "slug": "tailwindcss" },
-  { "name": "JavaScript", "slug": "javascript" },
-  { "name": "TypeScript", "slug": "typescript" },
-  { "name": "CSS", "slug": "css" },
-  { "name": "Markdown", "slug": "markdown" },
-  { "name": "Tutorial", "slug": "tutorial" }
+  {
+    "name": "Astro",
+    "slug": "astro"
+  },
+  {
+    "name": "TypeScript",
+    "slug": "typescript"
+  },
+  {
+    "name": "Markdown",
+    "slug": "markdown"
+  },
+  {
+    "name": "Tutorial",
+    "slug": "tutorial"
+  }
 ]
