@@ -1,10 +1,14 @@
 ---
 import site from "@/config/site";
+import { withBasePath } from "@/utils/url";
+
+const baseUrl = import.meta.env.BASE_URL || "/";
 ---
 
 <div
   id="search-modal"
   data-placeholder={site.labels.searchPlaceholder}
+  data-base-url={baseUrl}
   class="group pointer-events-none fixed inset-0 z-100 flex items-start justify-center px-4 pt-[12vh]"
 >
   <div
@@ -28,7 +32,7 @@ import site from "@/config/site";
         {
           ["categories", "tags", "tools"].map((item) => (
             <a
-              href={`/${item}`}
+              href={withBasePath(`/${item}`)}
               class="rounded-xl border border-border bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground capitalize transition-all hover:text-primary"
             >
               {item}
@@ -48,6 +52,7 @@ import site from "@/config/site";
 
     const placeholder =
       document.getElementById("search-modal")?.dataset.placeholder || "";
+    const baseUrl = document.getElementById("search-modal")?.dataset.baseUrl;
     if (
       // @ts-ignore
       typeof PagefindUI !== "undefined" &&
@@ -58,6 +63,7 @@ import site from "@/config/site";
         element: "#pagefind-search-ui",
         showSubResults: true,
         resetStyles: false,
+        baseUrl,
         translations: { placeholder },
       });
     }
