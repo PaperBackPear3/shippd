@@ -4,6 +4,7 @@ createdAt: 2026-01-01
 category: technology
 tags: [astro, tailwindcss]
 summary: Welcome to Breeze, a minimal Astro theme for personal websites.
+draft: true
 ---
 
 Welcome to **Breeze**, a clean and minimal Astro theme designed for personal websites and blogs.

@@ -5,6 +5,7 @@ category: technology
 tags: [astro, tutorial]
 linksTo: [markdown-guide]
 summary: How related posts now work in this blog, and what GitHub Copilot changed to enable it.
+draft: true
 ---
 
 I wanted articles in this blog to be connected to each other, so this update adds an automatic **Related articles** section to every post.
