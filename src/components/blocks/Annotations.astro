@@ -200,6 +200,34 @@ const { articleTitle } = Astro.props;
     menu.classList.add("flex", "opacity-100", "pointer-events-auto");
   };
 
+  const updateSelectionMenu = () => {
+    if (!root || !menu) return;
+
+    const text = getSelectedText();
+    const range = getSelectionRange();
+
+    if (!text || !range || !isSelectionInsideRoot(range)) {
+      hideMenu();
+      return;
+    }
+
+    // Temporarily reveal menu to get correct dimensions for clamped positioning.
+    menu.classList.remove("hidden", "pointer-events-none", "opacity-0");
+    menu.classList.add("flex", "opacity-100", "pointer-events-auto");
+
+    const rect = range.getBoundingClientRect();
+    const menuRect = menu.getBoundingClientRect();
+    const x = rect.left + rect.width / 2 - menuRect.width / 2;
+    const y = rect.top - menuRect.height - 8;
+    showMenu(x, y);
+  };
+
+  const removeSelection = () => {
+    const selection = window.getSelection();
+    if (!selection) return;
+    selection.removeAllRanges();
+  };
+
   const saveSelection = (note: string) => {
     const text = getSelectedText();
     if (!text) {
@@ -213,37 +241,48 @@ const { articleTitle } = Astro.props;
       (item) => item.text === text && item.articlePath === articlePath,
     );
 
-    if (root && menu) {
-      const updateSelectionMenu = () => {
-        const text = getSelectedText();
-        const range = getSelectionRange();
-
-        if (!text || !range || !isSelectionInsideRoot(range)) {
-          hideMenu();
-          return;
-        }
-
-        const rect = range.getBoundingClientRect();
-        const x = rect.left + rect.width / 2 - 88;
-        const y = rect.top - 52;
-        showMenu(x, y);
-      };
-
-      // Delay selection reads so browsers can finish updating selection state.
-      const scheduleUpdate = () => {
-        window.setTimeout(updateSelectionMenu, 0);
-      };
-
-      document.addEventListener("pointerup", scheduleUpdate);
-      document.addEventListener("keyup", scheduleUpdate);
-      document.addEventListener("selectionchange", () => {
-        if (!getSelectedText()) {
-          hideMenu();
-        }
-      });
-
-      document.addEventListener("scroll", hideMenu, true);
+    if (duplicate) {
+      toast("This selection is already saved for this article.", "info");
+      hideMenu();
+      removeSelection();
+      return;
     }
+
+    const annotation: Annotation = {
+      id: crypto.randomUUID(),
+      text,
+      note,
+      articleTitle,
+      articlePath,
+      articleUrl: window.location.href,
+      createdAt: new Date().toISOString(),
+    };
+
+    annotations.unshift(annotation);
+    writeAnnotations(annotations);
+    renderAnnotations();
+    hideMenu();
+    removeSelection();
+    toast("Selection saved.", "success");
+  };
+
+  const removeAnnotation = (id: string) => {
+    const annotations = readAnnotations();
+    const filtered = annotations.filter((item) => item.id !== id);
+    writeAnnotations(filtered);
+    renderAnnotations();
+    toast("Annotation removed.", "warning");
+  };
+
+  const clearAnnotations = () => {
+    const annotations = readAnnotations();
+    if (!annotations.length) {
+      toast("No annotations to clear.", "info");
+      return;
+    }
+
+    const confirmed = window.confirm("Clear all saved annotations?");
+    if (!confirmed) return;
 
     writeAnnotations([]);
     renderAnnotations();
@@ -361,40 +400,32 @@ const { articleTitle } = Astro.props;
   };
 
   if (root && menu) {
-    document.addEventListener("mouseup", () => {
-      const selection = window.getSelection();
-      const text = getSelectedText();
-      if (!selection || !text) {
-        hideMenu();
-        return;
-      }
+    const scheduleUpdate = () => {
+      // Delay reads so browsers finish updating selection state first.
+      window.setTimeout(updateSelectionMenu, 0);
+    };
 
-      const range = selection.getRangeAt(0);
-      const ancestor = range.commonAncestorContainer;
-      const element =
-        ancestor.nodeType === Node.ELEMENT_NODE
-          ? (ancestor as Element)
-          : ancestor.parentElement;
-
-      if (!element || !root.contains(element)) {
-        hideMenu();
-        return;
-      }
-
-      const rect = range.getBoundingClientRect();
-      const x = rect.left + rect.width / 2 - 88;
-      const y = rect.top - 52;
-      showMenu(x, y);
-    });
+    document.addEventListener("pointerup", scheduleUpdate);
+    document.addEventListener("keyup", scheduleUpdate);
 
     document.addEventListener("selectionchange", () => {
-      const selection = window.getSelection();
-      if (!selection || selection.isCollapsed) {
+      const text = getSelectedText();
+      if (!text) {
         hideMenu();
       }
     });
 
     document.addEventListener("scroll", hideMenu, true);
+    window.addEventListener("resize", hideMenu);
+
+    document.addEventListener("pointerdown", (event) => {
+      const target = event.target as Node;
+      const isInsideMenu = !!menu.contains(target);
+      const isInsideRoot = !!root.contains(target);
+      if (!isInsideMenu && !isInsideRoot) {
+        hideMenu();
+      }
+    });
   }
 
   annotateButton?.addEventListener("click", () => {
