@@ -1,7 +1,7 @@
 {
-  "name": "Breeze",
-  "short_name": "Breeze",
-  "description": "",
+  "name": "Shippd",
+  "short_name": "Shippd",
+  "description": "Blog about production environemnt stories",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -22,5 +22,5 @@
     }
   ],
   "categories": ["personal", "blog"],
-  "lang": "zh-CN"
+  "lang": "it-IT"
 }
