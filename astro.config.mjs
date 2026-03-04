@@ -7,10 +7,14 @@ import icon from "astro-icon";
 import expressiveCode from "astro-expressive-code";
 import sitemap from "@astrojs/sitemap";
 
+const siteUrl = process.env.SITE_URL || "https://your-domain.com";
+const basePath = process.env.BASE_PATH || "/";
+
 // https://astro.build/config
 export default defineConfig({
-  // IMPORTANT: Change this to your deployed site URL
-  site: "https://your-domain.com",
+  // Set these in CI (e.g. GitHub Actions) for project pages.
+  site: siteUrl,
+  base: basePath,
 
   vite: {
     plugins: [tailwindcss()],
