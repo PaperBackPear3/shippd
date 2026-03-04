@@ -31,6 +31,23 @@ const tags = (await getEntries(post.data.tags)).filter((value) => value);
 const allPosts = await getCollection("posts", ({ data }) => {
   return import.meta.env.PROD ? data.draft !== true : true;
 });
+const linkedPosts = (await getEntries(post.data.linksTo)).filter(
+  (value) => value,
+);
+const backlinks = allPosts
+  .filter((candidate) => candidate.id !== post.id)
+  .filter((candidate) =>
+    candidate.data.linksTo.some(
+      (linkRef) =>
+        linkRef.collection === post.collection && linkRef.id === post.id,
+    ),
+  )
+  .sort(
+    (a, b) =>
+      new Date(b.data.createdAt).getTime() -
+      new Date(a.data.createdAt).getTime(),
+  )
+  .slice(0, 8);
 
 const currentTagIds = new Set(
   post.data.tags.map((tag) => `${tag.collection}:${tag.id}`),
@@ -178,6 +195,52 @@ const relatedPosts = allPosts
         ))
       }
     </div>
+
+    {
+      linkedPosts.length > 0 && (
+        <section class="mt-14 border-t border-border/40 pt-10">
+          <p class="mb-2 text-[11px] font-bold tracking-[0.2em] text-muted-foreground/70 uppercase">
+            Link Graph
+          </p>
+          <div class="mb-6 flex items-center gap-2">
+            <h2 class="text-lg font-semibold tracking-tight text-foreground">
+              Links
+            </h2>
+            <span class="rounded-full border border-border/50 bg-muted/30 px-2 py-0.5 font-mono text-[11px] text-muted-foreground">
+              {linkedPosts.length}
+            </span>
+          </div>
+          <div class="space-y-1">
+            {linkedPosts.map((linkedPost) => (
+              <PostPreview post={linkedPost} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    {
+      backlinks.length > 0 && (
+        <section class="mt-14 border-t border-border/40 pt-10">
+          <p class="mb-2 text-[11px] font-bold tracking-[0.2em] text-muted-foreground/70 uppercase">
+            Link Graph
+          </p>
+          <div class="mb-6 flex items-center gap-2">
+            <h2 class="text-lg font-semibold tracking-tight text-foreground">
+              Backlinks
+            </h2>
+            <span class="rounded-full border border-border/50 bg-muted/30 px-2 py-0.5 font-mono text-[11px] text-muted-foreground">
+              {backlinks.length}
+            </span>
+          </div>
+          <div class="space-y-1">
+            {backlinks.map((backlinkPost) => (
+              <PostPreview post={backlinkPost} />
+            ))}
+          </div>
+        </section>
+      )
+    }
 
     {
       relatedPosts.length > 0 && (

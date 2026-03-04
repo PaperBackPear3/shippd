@@ -3,6 +3,7 @@ title: Related Articles with Tags and Categories
 createdAt: 2026-03-04
 category: technology
 tags: [astro, tutorial]
+linksTo: [markdown-guide]
 summary: How related posts now work in this blog, and what GitHub Copilot changed to enable it.
 ---
 
@@ -44,6 +45,18 @@ This means tag overlap has the strongest influence, while category acts as a use
 The section appears on each post page under the tag chips with the heading **Related articles**.
 
 It reuses the existing `PostPreview` component, so the visual style stays consistent with the rest of the theme.
+
+## Links and backlinks
+
+This update also adds explicit article graphing via frontmatter.
+
+- New post field: `linksTo`
+- Purpose: declare outgoing links to other posts by slug
+- Result: post pages now render both **Links** and **Backlinks** sections
+
+`Backlinks` are computed automatically by scanning all posts and finding which ones include the current post in `linksTo`.
+
+This part of the implementation was also made by **GitHub Copilot**.
 
 ## Notes for future improvements
 
