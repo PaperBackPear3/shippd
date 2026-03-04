@@ -51,3 +51,23 @@
   background: var(--border);
   border-radius: 10px;
 }
+
+body.focus-mode {
+  padding: 0;
+}
+
+body.focus-mode #reading-layout {
+  max-width: 100%;
+  min-height: 100vh;
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+}
+
+body.focus-mode #reading-layout aside {
+  display: none;
+}
+
+body.focus-mode #reading-layout main {
+  height: 100vh;
+}

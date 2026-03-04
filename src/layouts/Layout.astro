@@ -10,6 +10,7 @@ const head = Astro.props;
 
 <BaseLayout {...head}>
   <div
+    id="reading-layout"
     class="relative flex h-auto w-full max-w-5xl flex-col overflow-hidden rounded-none border border-border bg-card shadow-main md:flex-row md:rounded-[2.5rem]"
   >
     <Sidebar />
@@ -20,4 +21,36 @@ const head = Astro.props;
       <slot />
     </main>
   </div>
+
+  <button
+    id="focus-mode-toggle"
+    type="button"
+    class="fixed top-4 right-4 z-50 inline-flex items-center gap-2 rounded-full border border-border bg-card/90 px-4 py-2 text-sm font-semibold text-foreground shadow-main backdrop-blur transition hover:border-primary/30 hover:text-primary md:top-8 md:right-8"
+    aria-pressed="false"
+  >
+    <span data-focus-label>Focus Mode</span>
+  </button>
+
+  <script>
+    const storageKey = "breeze-focus-mode";
+    const button = document.getElementById("focus-mode-toggle");
+    const label = button?.querySelector("[data-focus-label]");
+
+    if (button && label) {
+      const setFocusMode = (enabled: boolean) => {
+        document.body.classList.toggle("focus-mode", enabled);
+        button.setAttribute("aria-pressed", String(enabled));
+        label.textContent = enabled ? "Exit Focus" : "Focus Mode";
+      };
+
+      const persisted = localStorage.getItem(storageKey) === "true";
+      setFocusMode(persisted);
+
+      button.addEventListener("click", () => {
+        const next = !document.body.classList.contains("focus-mode");
+        setFocusMode(next);
+        localStorage.setItem(storageKey, String(next));
+      });
+    }
+  </script>
 </BaseLayout>
