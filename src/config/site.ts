@@ -1,9 +1,10 @@
 const site = {
   // --- Site Metadata ---
   meta: {
-    title: "Breeze",
-    description: "A minimal Astro theme for personal websites",
-    author: "Your Name",
+    title: "Shippd",
+    description:
+      "A minimal personal blog about everyday's real world production stories (not only prod, also test and dev envs)",
+    author: "PaperBackPear",
     logo: "/logo.svg",
     ogImage: "/og-image.png",
     // HTML lang attribute, affects page language and date formatting
@@ -23,18 +24,35 @@ const site = {
 
   // --- Social Links ---
   social: [
-    { name: "GitHub", href: "https://github.com/your-username", icon: "mdi:github" },
-    { name: "Email", href: "mailto:hello@example.com", icon: "mdi:email" },
+    {
+      name: "GitHub",
+      href: "https://github.com/PaperBackPear3",
+      icon: "mdi:github",
+    },
+    {
+      name: "Email",
+      href: "mailto:fabioangeloni@gmail.com",
+      icon: "mdi:email",
+    },
+    {
+      name: "Linkedin",
+      href: "www.linkedin.com/in/fabio-angeloni-7165041a9",
+      icon: "mdi:linkedin",
+    },
   ],
 
   // --- Homepage Hero ---
   hero: {
-    greeting: "👋 Hello, I'm Breeze",
+    greeting: "👋 Hello, I'm Fabio <PaperBackPear>",
     // Supports HTML. Use <span class="font-medium text-foreground underline decoration-primary/30"> to highlight keywords
     description:
-      'A minimal personal website theme built with <span class="font-medium text-foreground underline decoration-primary/30">Astro</span> and <span class="font-medium text-foreground underline decoration-primary/30">Tailwind CSS</span>.',
+      "I love coding and everything sourrounding computers. here you will read about real world scenarious i found myself into, the problems I faced and solutions I found",
     cards: [
-      { icon: "mdi:explore", label: "Status", value: "Building something cool" },
+      {
+        icon: "mdi:explore",
+        label: "Status",
+        value: "Exploring K8s",
+      },
       { icon: "mdi:location", label: "Location", value: "Earth" },
     ],
   },
@@ -66,15 +84,19 @@ const site = {
   tools: [
     {
       name: "development",
-      items: ["VS Code", "WebStorm", "Terminal", "Git", "Docker", "Postman"]
-    },
-    {
-      name: "design",
-      items: ["Figma", "Sketch", "Adobe XD", "Photoshop"]
+      items: [
+        "VS Code",
+        "WebStorm",
+        "Terminal",
+        "Git",
+        "Docker",
+        "k8s",
+        "Bruno",
+      ],
     },
     {
       name: "productivity",
-      items: ["Notion", "Obsidian", "Raycast", "Arc Browser"]
+      items: ["Notion", "Obsidian", "Arc Browser"],
     },
   ],
 
@@ -93,7 +115,8 @@ const site = {
     backToPosts: "Back to posts",
     goHome: "Go Home",
     notFoundTitle: "Page not found",
-    notFoundDescription: "The page you're looking for may have been removed or the link is broken.",
+    notFoundDescription:
+      "The page you're looking for may have been removed or the link is broken.",
     endOfPost: "End of Post",
     tableOfContents: "Table of Contents",
     searchPlaceholder: "Search posts, tags, or commands...",
