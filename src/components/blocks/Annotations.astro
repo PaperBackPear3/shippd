@@ -1,0 +1,405 @@
+---
+interface Props {
+  articleTitle: string;
+}
+
+const { articleTitle } = Astro.props;
+---
+
+<div
+  id="annotation-selection-menu"
+  class="pointer-events-none fixed z-[60] hidden items-center gap-2 rounded-full border border-border bg-card/95 p-1.5 opacity-0 shadow-main backdrop-blur transition"
+>
+  <button
+    id="annotation-annotate"
+    type="button"
+    class="rounded-full border border-border/60 px-3 py-1.5 text-xs font-semibold text-foreground transition hover:border-primary/60 hover:text-primary"
+  >
+    Annotate
+  </button>
+  <button
+    id="annotation-save"
+    type="button"
+    class="rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground transition hover:opacity-90"
+  >
+    Save
+  </button>
+</div>
+
+<button
+  id="annotation-toggle"
+  type="button"
+  class="fixed right-4 bottom-4 z-50 inline-flex items-center gap-2 rounded-full border border-border bg-card/90 px-4 py-2 text-sm font-semibold text-foreground shadow-main backdrop-blur transition hover:border-primary/50 hover:text-primary md:right-8 md:bottom-8"
+>
+  <span>Annotations</span>
+  <span
+    id="annotation-count"
+    class="rounded-full bg-muted px-2 py-0.5 font-mono text-xs text-muted-foreground"
+    >0</span
+  >
+</button>
+
+<section
+  id="annotation-panel"
+  class="fixed right-4 bottom-20 z-50 hidden max-h-[70vh] w-[min(92vw,30rem)] overflow-hidden rounded-3xl border border-border bg-card/95 shadow-main backdrop-blur md:right-8"
+  aria-live="polite"
+>
+  <header
+    class="flex items-center justify-between border-b border-border/60 px-4 py-3"
+  >
+    <h2 class="text-sm font-bold tracking-tight text-foreground">
+      Saved Notes
+    </h2>
+    <button
+      id="annotation-close"
+      type="button"
+      class="rounded-full border border-border/60 px-2.5 py-1 text-xs font-semibold text-muted-foreground transition hover:text-foreground"
+    >
+      Close
+    </button>
+  </header>
+
+  <div id="annotation-list" class="max-h-[52vh] space-y-3 overflow-y-auto p-4">
+  </div>
+
+  <footer
+    class="flex flex-wrap items-center gap-2 border-t border-border/60 bg-muted/20 px-4 py-3"
+  >
+    <button
+      id="annotation-export"
+      type="button"
+      class="rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground transition hover:opacity-90"
+    >
+      Export Markdown
+    </button>
+    <button
+      id="annotation-clear"
+      type="button"
+      class="rounded-full border border-border/60 px-3 py-1.5 text-xs font-semibold text-muted-foreground transition hover:border-red-400/60 hover:text-red-500"
+    >
+      Clear All
+    </button>
+  </footer>
+</section>
+
+<script define:vars={{ articleTitle }}>
+  type Annotation = {
+    id: string;
+    text: string;
+    note: string;
+    articleTitle: string;
+    articlePath: string;
+    articleUrl: string;
+    createdAt: string;
+  };
+
+  const storageKey = "breeze-annotations-v1";
+
+  const root = document.querySelector("[data-annotate-root]");
+  const menu = document.getElementById("annotation-selection-menu");
+  const annotateButton = document.getElementById("annotation-annotate");
+  const saveButton = document.getElementById("annotation-save");
+
+  const panel = document.getElementById("annotation-panel");
+  const toggle = document.getElementById("annotation-toggle");
+  const closeButton = document.getElementById("annotation-close");
+  const exportButton = document.getElementById("annotation-export");
+  const clearButton = document.getElementById("annotation-clear");
+  const list = document.getElementById("annotation-list");
+  const count = document.getElementById("annotation-count");
+
+  const toast = (
+    message: string,
+    type: "success" | "error" | "warning" | "info" = "success",
+  ) => {
+    const showToast = (window as any).showToast;
+    if (typeof showToast === "function") {
+      showToast(message, type);
+      return;
+    }
+
+    if (type === "error") {
+      window.alert(message);
+    } else {
+      console.log(message);
+    }
+  };
+
+  const readAnnotations = (): Annotation[] => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const writeAnnotations = (value: Annotation[]) => {
+    localStorage.setItem(storageKey, JSON.stringify(value));
+  };
+
+  const getSelectedText = () => {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed) return "";
+
+    const text = selection.toString().replace(/\s+/g, " ").trim();
+    return text;
+  };
+
+  const hideMenu = () => {
+    if (!menu) return;
+    menu.classList.add("hidden", "pointer-events-none", "opacity-0");
+    menu.classList.remove("flex", "opacity-100", "pointer-events-auto");
+  };
+
+  const showMenu = (x: number, y: number) => {
+    if (!menu) return;
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const menuRect = menu.getBoundingClientRect();
+
+    const clampedX = Math.max(
+      8,
+      Math.min(x, viewportWidth - menuRect.width - 8),
+    );
+    const clampedY = Math.max(
+      8,
+      Math.min(y, viewportHeight - menuRect.height - 8),
+    );
+
+    menu.style.left = `${clampedX}px`;
+    menu.style.top = `${clampedY}px`;
+    menu.classList.remove("hidden", "pointer-events-none", "opacity-0");
+    menu.classList.add("flex", "opacity-100", "pointer-events-auto");
+  };
+
+  const saveSelection = (note: string) => {
+    const text = getSelectedText();
+    if (!text) {
+      hideMenu();
+      return;
+    }
+
+    const annotations = readAnnotations();
+    const articlePath = window.location.pathname;
+    const duplicate = annotations.find(
+      (item) => item.text === text && item.articlePath === articlePath,
+    );
+
+    if (duplicate) {
+      toast("This snippet is already saved for this article.", "info");
+      window.getSelection()?.removeAllRanges();
+      hideMenu();
+      return;
+    }
+
+    const entry: Annotation = {
+      id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      text,
+      note,
+      articleTitle,
+      articlePath,
+      articleUrl: window.location.href,
+      createdAt: new Date().toISOString(),
+    };
+
+    annotations.unshift(entry);
+    writeAnnotations(annotations);
+    renderAnnotations();
+
+    window.getSelection()?.removeAllRanges();
+    hideMenu();
+    toast("Annotation saved.", "success");
+  };
+
+  const removeAnnotation = (id: string) => {
+    const annotations = readAnnotations().filter((item) => item.id !== id);
+    writeAnnotations(annotations);
+    renderAnnotations();
+  };
+
+  const clearAnnotations = () => {
+    const approved = window.confirm("Clear all saved annotations?");
+    if (!approved) return;
+
+    writeAnnotations([]);
+    renderAnnotations();
+    toast("All annotations cleared.", "warning");
+  };
+
+  const escapeMarkdown = (value: string) =>
+    value
+      .replace(/\\/g, "\\\\")
+      .replace(/\*/g, "\\*")
+      .replace(/_/g, "\\_")
+      .replace(/`/g, "\\`")
+      .replace(/\[/g, "\\[")
+      .replace(/\]/g, "\\]");
+
+  const escapeHtml = (value: string) =>
+    value
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+  const exportMarkdown = () => {
+    const annotations = readAnnotations();
+    if (!annotations.length) {
+      toast("No annotations to export yet.", "info");
+      return;
+    }
+
+    const groups = new Map<string, Annotation[]>();
+    annotations.forEach((item) => {
+      const key = `${item.articleTitle}||${item.articleUrl}`;
+      const current = groups.get(key) || [];
+      current.push(item);
+      groups.set(key, current);
+    });
+
+    const lines: string[] = [];
+    lines.push("# Article Annotations");
+    lines.push("");
+    lines.push(`Exported: ${new Date().toLocaleString()}`);
+    lines.push("");
+
+    for (const [key, entries] of groups.entries()) {
+      const [title, url] = key.split("||");
+      lines.push(`## [${escapeMarkdown(title)}](${url})`);
+      lines.push("");
+
+      entries.forEach((item, index) => {
+        lines.push(`### ${index + 1}.`);
+        lines.push("");
+        lines.push(...item.text.split("\n").map((line) => `> ${line}`));
+        if (item.note) {
+          lines.push("");
+          lines.push(`Note: ${escapeMarkdown(item.note)}`);
+        }
+        lines.push("");
+      });
+    }
+
+    const content = `${lines.join("\n")}\n`;
+    const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const date = new Date().toISOString().slice(0, 10);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = `annotations-${date}.md`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+
+    toast("Markdown export created.", "success");
+  };
+
+  const renderAnnotations = () => {
+    if (!list || !count) return;
+
+    const annotations = readAnnotations();
+    count.textContent = String(annotations.length);
+
+    if (!annotations.length) {
+      list.innerHTML = `
+				<p class="rounded-2xl border border-border/50 bg-muted/30 px-3 py-4 text-sm text-muted-foreground">
+					No annotations yet. Select text in this article and click Save.
+				</p>
+			`;
+      return;
+    }
+
+    list.innerHTML = annotations
+      .map((item) => {
+        const article = `${item.articleTitle}`;
+        const text =
+          item.text.length > 300 ? `${item.text.slice(0, 300)}...` : item.text;
+        const safeArticle = escapeHtml(article);
+        const safeText = escapeHtml(text);
+        const safeNote = escapeHtml(item.note);
+
+        return `
+					<article class="space-y-2 rounded-2xl border border-border/50 bg-background/40 p-3">
+						<p class="text-[11px] font-semibold tracking-wide text-primary uppercase">${safeArticle}</p>
+						<p class="text-sm leading-relaxed text-foreground/90">${safeText}</p>
+						${safeNote ? `<p class="text-xs text-muted-foreground">Note: ${safeNote}</p>` : ""}
+						<div class="flex flex-wrap items-center gap-2 pt-1">
+							<a href="${item.articleUrl}" class="rounded-full border border-border/60 px-2.5 py-1 text-[11px] font-semibold text-muted-foreground transition hover:text-foreground">Open Article</a>
+							<button type="button" data-remove-id="${item.id}" class="rounded-full border border-border/60 px-2.5 py-1 text-[11px] font-semibold text-red-500/90 transition hover:border-red-400/60 hover:text-red-500">Remove</button>
+						</div>
+					</article>
+				`;
+      })
+      .join("");
+  };
+
+  if (root && menu) {
+    document.addEventListener("mouseup", () => {
+      const selection = window.getSelection();
+      const text = getSelectedText();
+      if (!selection || !text) {
+        hideMenu();
+        return;
+      }
+
+      const range = selection.getRangeAt(0);
+      const ancestor = range.commonAncestorContainer;
+      const element =
+        ancestor.nodeType === Node.ELEMENT_NODE
+          ? (ancestor as Element)
+          : ancestor.parentElement;
+
+      if (!element || !root.contains(element)) {
+        hideMenu();
+        return;
+      }
+
+      const rect = range.getBoundingClientRect();
+      const x = rect.left + rect.width / 2 - 88;
+      const y = rect.top - 52;
+      showMenu(x, y);
+    });
+
+    document.addEventListener("selectionchange", () => {
+      const selection = window.getSelection();
+      if (!selection || selection.isCollapsed) {
+        hideMenu();
+      }
+    });
+
+    document.addEventListener("scroll", hideMenu, true);
+  }
+
+  annotateButton?.addEventListener("click", () => {
+    const note = window.prompt("Add a quick note (optional):", "") || "";
+    saveSelection(note.trim());
+  });
+
+  saveButton?.addEventListener("click", () => saveSelection(""));
+
+  toggle?.addEventListener("click", () => {
+    panel?.classList.toggle("hidden");
+  });
+
+  closeButton?.addEventListener("click", () => {
+    panel?.classList.add("hidden");
+  });
+
+  clearButton?.addEventListener("click", clearAnnotations);
+  exportButton?.addEventListener("click", exportMarkdown);
+
+  list?.addEventListener("click", (event) => {
+    const target = event.target as HTMLElement;
+    const id = target.getAttribute("data-remove-id");
+    if (!id) return;
+    removeAnnotation(id);
+  });
+
+  renderAnnotations();
+</script>

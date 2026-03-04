@@ -11,6 +11,7 @@ import { Icon } from "astro-icon/components";
 import Toast from "@/components/blocks/Toast.astro";
 import Comments from "@/components/blocks/Comments.astro";
 import TableOfContents from "@/components/blocks/TableOfContents.astro";
+import Annotations from "@/components/blocks/Annotations.astro";
 import site from "@/config/site";
 import { withBasePath } from "@/utils/url";
 
@@ -113,6 +114,7 @@ const tags = (await getEntries(post.data.tags)).filter((value) => value);
         "prose-",
       ]}
       data-pagefind-body
+      data-annotate-root
     >
       <Content components={{ a: Link, img: Img }} />
     </div>
@@ -159,6 +161,7 @@ const tags = (await getEntries(post.data.tags)).filter((value) => value);
     </div>
 
     <Toast />
+    <Annotations articleTitle={post.data.title} />
     <Comments />
   </footer>
 </Layout>
