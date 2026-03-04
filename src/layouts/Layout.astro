@@ -2,10 +2,13 @@
 import Sidebar from "@/components/layout/Sidebar.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import type { HeadProps } from "@/types";
+import { stripBasePath } from "@/utils/url";
 
 type Props = HeadProps;
 
 const head = Astro.props;
+const pathname = stripBasePath(Astro.url.pathname);
+const isArticlePage = /^\/posts\/.+/.test(pathname);
 ---
 
 <BaseLayout {...head}>
@@ -22,35 +25,51 @@ const head = Astro.props;
     </main>
   </div>
 
-  <button
-    id="focus-mode-toggle"
-    type="button"
-    class="fixed top-4 right-4 z-50 inline-flex items-center gap-2 rounded-full border border-border bg-card/90 px-4 py-2 text-sm font-semibold text-foreground shadow-main backdrop-blur transition hover:border-primary/30 hover:text-primary md:top-8 md:right-8"
-    aria-pressed="false"
-  >
-    <span data-focus-label>Focus Mode</span>
-  </button>
+  {
+    isArticlePage && (
+      <button
+        id="focus-mode-toggle"
+        type="button"
+        class="fixed top-4 right-4 z-50 inline-flex items-center gap-2 rounded-full border border-border bg-card/90 px-4 py-2 text-sm font-semibold text-foreground shadow-main backdrop-blur transition hover:border-primary/30 hover:text-primary md:top-8 md:right-8"
+        aria-pressed="false"
+      >
+        <span data-focus-label>Focus Mode</span>
+      </button>
+    )
+  }
 
   <script>
     const storageKey = "breeze-focus-mode";
-    const button = document.getElementById("focus-mode-toggle");
-    const label = button?.querySelector("[data-focus-label]");
 
-    if (button && label) {
-      const setFocusMode = (enabled: boolean) => {
+    const syncFocusMode = () => {
+      const button = document.getElementById("focus-mode-toggle");
+      const label = button?.querySelector("[data-focus-label]");
+
+      if (!button || !label) {
+        document.body.classList.remove("focus-mode");
+        return;
+      }
+
+      const setFocusMode = (enabled) => {
         document.body.classList.toggle("focus-mode", enabled);
         button.setAttribute("aria-pressed", String(enabled));
         label.textContent = enabled ? "Exit Focus" : "Focus Mode";
       };
 
+      if (!button.dataset.focusBound) {
+        button.dataset.focusBound = "true";
+        button.addEventListener("click", () => {
+          const next = !document.body.classList.contains("focus-mode");
+          setFocusMode(next);
+          localStorage.setItem(storageKey, String(next));
+        });
+      }
+
       const persisted = localStorage.getItem(storageKey) === "true";
       setFocusMode(persisted);
+    };
 
-      button.addEventListener("click", () => {
-        const next = !document.body.classList.contains("focus-mode");
-        setFocusMode(next);
-        localStorage.setItem(storageKey, String(next));
-      });
-    }
+    document.addEventListener("astro:page-load", syncFocusMode);
+    syncFocusMode();
   </script>
 </BaseLayout>
