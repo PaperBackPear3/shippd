@@ -27,5 +27,11 @@
     "slug": "vibe-coding",
     "description": "updates made almost all with AI",
     "icon": "mdi:robot-confused"
+  },
+  {
+    "name": "Drafts",
+    "slug": "drafts",
+    "description": "things that should not be shown",
+    "icon": "mdi:file"
   }
 ]
