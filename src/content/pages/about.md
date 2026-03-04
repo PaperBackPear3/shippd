@@ -1,13 +1,11 @@
 ---
 title: About
-description: About this site and its author
+description: Hi! im PaperBackPear just a dev
 ---
 
 ## About Me
 
-Hello! I'm a developer who loves building things for the web.
-
-I created this site using [Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com), and I'm sharing it as a theme called **Breeze** so others can use it too.
+- i like coding and cats
 
 ## Tech Stack
 
