@@ -18,8 +18,7 @@ read more to find out why and how (it's very easy)
 
 ### Intro
 
-I have always wondered how companies built and manged their codebases and infrastructure, but never found anything online that was a full guide or examples, best practices.
-it's awlays "from zero to hero tutorials" or "tech X for beginners" but they never show real world use cases or everyday problems. so here this came to be
+I have always wondered how companies built and manged their codebases and infrastructures, but never found anything online that was a real use case. it's always "from zero to hero tutorials" or "tech X for beginners" but they never show real world use cases or everyday problems. so here this came to be
 
 ### Tech Stack
 
