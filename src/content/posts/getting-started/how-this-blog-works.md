@@ -10,11 +10,11 @@ draft: false
 
 # What is this and how I built it
 
-## TLDR;
+## TL;DR
 
-It's just a static content generator made with [Astro](https://astro.build/), customized with the [Breeze](https://astro.build/themes/details/breeze/) theme, deployed on [Github Pages](https://docs.github.com/en/pages).
+It's just a static content generator made with [Astro](https://astro.build/), customized with the [Breeze](https://astro.build/themes/details/breeze/) theme, deployed on [GitHub Pages](https://docs.github.com/en/pages).
 
-read more to find out why and how (it's very easy)
+Read more to find out why and how (it's very easy)
 
 ### Intro
 
