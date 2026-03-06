@@ -4,15 +4,15 @@ createdAt: 2026-03-06
 category: technology
 tags: [blog, how to]
 linksTo: []
-summary: short story on how i am making this blog
+summary: short story on how I am making this blog
 draft: false
 ---
 
-# What is this and how i built it
+# What is this and how I built it
 
 ## TLDR;
 
-it's just a static content generator made with [Astro](https://astro.build/), customized with the [Breeze](https://astro.build/themes/details/breeze/) theme, deployed on [Github Pages](https://docs.github.com/en/pages).
+It's just a static content generator made with [Astro](https://astro.build/), customized with the [Breeze](https://astro.build/themes/details/breeze/) theme, deployed on [Github Pages](https://docs.github.com/en/pages).
 
 read more to find out why and how (it's very easy)
 
@@ -22,7 +22,7 @@ I have always wondered how companies built and manged their codebases and infras
 
 ### Tech Stack
 
-when i wanted to start writing about my life as Dev i wanted something quick and easy, that made me focus on publishing and not on the setup, yet that i could extend and have ownership of, so i chose:
+When I wanted to start writing about my life as Dev I wanted something quick and easy, that made me focus on publishing and not on the setup, yet that I could extend and have ownership of, so I chose:
 
 - Astro
 - Breeze custom theme
@@ -30,9 +30,9 @@ when i wanted to start writing about my life as Dev i wanted something quick and
 
 ### how the deploy works
 
-whenever i push new changes into `main` branch a Github action is triggered
+Whenever I push new changes into `main` branch a Github action is triggered
 
-these are the steps
+These are the steps:
 
 ```yaml
 steps:
