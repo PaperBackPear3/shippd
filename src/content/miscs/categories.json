@@ -6,14 +6,8 @@
     "icon": "mdi:code-tags"
   },
   {
-    "name": "Design",
-    "slug": "design",
-    "description": "Thoughts on UI/UX and visual design",
-    "icon": "mdi:palette"
-  },
-  {
-    "name": "Life",
-    "slug": "life",
+    "name": "Thoughts",
+    "slug": "thoughts",
     "description": "Daily life and personal reflections",
     "icon": "mdi:coffee"
   },

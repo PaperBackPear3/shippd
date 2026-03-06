@@ -3,6 +3,7 @@ title: "How I build this"
 createdAt: 2026-02-06
 category: technology
 tags: [blog, how to]
+linksTo: []
 summary: short story on how i am making this blog
 draft: false
 ---
