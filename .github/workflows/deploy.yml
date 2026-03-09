@@ -60,6 +60,8 @@ jobs:
         env:
           SITE_URL: ${{ steps.pages.outputs.site_url }}
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          UMAMI_URL: ${{ secrets.UMAMI_URL }}
+          UMAMI_WEBSITE_ID: ${{ secrets.UMAMI_WEBSITE_ID }}
         run: pnpm build
 
       - name: Configure GitHub Pages
